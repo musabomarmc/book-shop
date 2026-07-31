@@ -1,6 +1,10 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { useApi } from "../context/api.context.jsx";
+
 const AddBook = () => {
+    const { createBook } = useApi();
+
     const navigate = useNavigate()
     const [newBook, setNewBook] = useState({
         coverimage: "",
@@ -82,7 +86,24 @@ const AddBook = () => {
                 price: Number(newBook.price)
             }
 
-            console.log(bookData)
+            const result = await createBook(bookData)
+
+            if (result) {
+                console.log("book created successfully")
+                setNewBook({
+                    coverimage: "",
+                    title: "",
+                    author: "",
+                    price: "",
+                    description: ""
+                })
+
+                setTimeout(() => {
+                    navigate("/")
+                }, 1500)
+            } else{
+                setSubmitError("failed to create a book")
+            }
         } catch (error) {
             setSubmitError("Network error. Please try again.")
             console.error("Error creating book:", error)
