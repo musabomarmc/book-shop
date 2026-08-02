@@ -90,6 +90,9 @@ export const ApiProvider = ({ children }) => {
             });
             const data = await res.json();
             if (res.ok) {
+                setBooks(prev => prev.map(book => 
+                    book._id === bookId ? data : book
+                ));
                 setLoading(false);
                 return data
             } else {

@@ -77,7 +77,7 @@ const Home = () => {
                             <button onClick={() => navigate(`/book/${book._id}`)} className="flex-1 bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors">
                                 Details
                             </button>
-                            <button className="flex-1 bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors">
+                            <button onClick={() => navigate(`/edit/${book._id}`)} className="flex-1 bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors">
                                 Update
                             </button>
                             <button onClick={() => {
