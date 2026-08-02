@@ -65,6 +65,7 @@ export const ApiProvider = ({ children }) => {
             });
             const data = await res.json();
             if (res.ok) {
+                setBooks(prev => [...prev, data]);
                 setLoading(false);
                 return data
             } else {
@@ -111,10 +112,11 @@ export const ApiProvider = ({ children }) => {
             });
             const data = await res.json();
             if (res.ok) {
+                setBooks(prev => prev.filter(book => book._id !== bookId));
                 setLoading(false);
                 return data
             } else {
-                console.log("update a book failed", data.message);
+                console.log("delete a book failed", data.message);
                 setLoading(false);
             }
 

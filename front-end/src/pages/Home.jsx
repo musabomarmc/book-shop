@@ -3,8 +3,29 @@ import { useNavigate } from "react-router-dom"
 import { useApi } from "../context/api.context.jsx";
 
 const Home = () => {
-    const { books, loading } = useApi();
+    const { books, loading, deleteBook } = useApi();
     const navigate = useNavigate()
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [bookToDelete, setBookToDelete] = useState(null);
+
+    // Handle actual deletion
+    const handleConfirmDelete = async () => {
+        if (!bookToDelete) return;
+
+        try {
+            await deleteBook(bookToDelete._id);
+            setShowDeleteModal(false);
+            setBookToDelete(null);
+        } catch (error) {
+            console.error("Error deleting book:", error);
+        }
+    };
+
+    // Handle cancel deletion
+    const handleCancelDelete = () => {
+        setShowDeleteModal(false);
+        setBookToDelete(null);
+    };
 
     if(loading){
         return (
@@ -59,7 +80,10 @@ const Home = () => {
                             <button className="flex-1 bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors">
                                 Update
                             </button>
-                            <button className="flex-1 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors">
+                            <button onClick={() => {
+                                setBookToDelete(book);
+                                setShowDeleteModal(true);
+                            }} className="flex-1 bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors">
                                 Delete
                             </button>
                         </div>
@@ -72,6 +96,60 @@ const Home = () => {
                         <p className="text-gray-500 text-lg">No books available</p>
                     </div>
                 )}
+
+                {/* Delete Confirmation Modal */}
+            {showDeleteModal && (
+                <div className="fixed inset-0 bg-black/50 bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg max-w-md w-full p-6 shadow-xl">
+                        {/* Modal Header */}
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-xl font-bold text-gray-800">Confirm Delete</h3>
+                            <button
+                                onClick={handleCancelDelete}
+                                className="text-gray-500 hover:text-gray-700 text-2xl"
+                            >
+                                x
+                            </button>
+                        </div>
+
+                        {/* Modal Body */}
+                        <div className="mb-6">
+                            <p className="text-gray-600 mb-2">
+                                Are you sure you want to delete this book?
+                            </p>
+                            {bookToDelete && (
+                                <div className="bg-gray-50 p-3 rounded border border-gray-200">
+                                    <p className="font-semibold text-gray-800">
+                                        "{bookToDelete.title || "Untitled"}"
+                                    </p>
+                                    <p className="text-sm text-gray-600">
+                                        by {bookToDelete.author || "Unknown Author"}
+                                    </p>
+                                </div>
+                            )}
+                            <p className="text-red-500 text-sm mt-3">
+                                ⚠️ This action cannot be undone.
+                            </p>
+                        </div>
+
+                        {/* Modal Footer - Buttons */}
+                        <div className="flex gap-3">
+                            <button
+                                onClick={handleCancelDelete}
+                                className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded font-medium transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleConfirmDelete}
+                                className="flex-1 bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded font-medium transition-colors flex items-center justify-center"
+                            >
+                                Delete Book
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             </div>
         </div>
